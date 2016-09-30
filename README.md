@@ -28,6 +28,5 @@ You can configure the builtin server using environment variables:
  * SERVER_PORT: Port of builtin server
  
 If you use a secured etcd:
- * ETCDCTL_CA_FILE
- * ETCDCTL_KEY_FILE
- * ETCDCTL_CERT_FILE
+ * ETCDCTL_CA_FILE - the path should be avaiable in docker image if you want to run in docker
+ * ETCDCTL_AUTH

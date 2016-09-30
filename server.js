@@ -4,23 +4,14 @@ var fs = require('fs');
 var http = require('http');
 
 var ca_file = process.env.ETCDCTL_CA_FILE || false;
-var key_file = process.env.ETCDCTL_KEY_FILE || false;
-var cert_file = process.env.ETCDCTL_CERT_FILE || false;
+var etcd_auth = process.env.ETCDCTL_AUTH || false;
 
 var requester = http.request;
-if(cert_file) {
+if(ca_file) {
   // use https requests if theres a cert file
   var https = require('https');
   requester = https.request;
 
-  if(!fs.existsSync(cert_file)) {
-    console.error('CERT FILE', cert_file, 'not found!');
-    process.exit(1);
-  }
-  if(!fs.existsSync(key_file)) {
-    console.error('KEY FILE', key_file, 'not found!');
-    process.exit(1);
-  }
   if(!fs.existsSync(ca_file)) {
     console.error('CA FILE', ca_file, 'not found!');
     process.exit(1);
@@ -88,9 +79,11 @@ function proxy(client_req, client_res) {
 
   // https/certs supprt
   if(cert_file) {
-    opts.key = fs.readFileSync(key_file);
     opts.ca = fs.readFileSync(ca_file);
-    opts.cert = fs.readFileSync(cert_file);
+  }
+
+  if(etcd_auth) {
+    opts.auth = etcd_auth;
   }
 
   client_req.pipe(requester(opts, function(res) {
